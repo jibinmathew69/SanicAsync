@@ -51,13 +51,14 @@ class UrlCrawler:
 
 
     async def fetch_urls(self,urls,id,imgur,**kwargs):
+        import datetime
         loop = asyncio.get_event_loop()
         semaphore = asyncio.BoundedSemaphore(self.max_connect)
         async with aiohttp.ClientSession(loop=loop) as session:
             await asyncio.wait([
                 self.get_image(url,session,semaphore,id,imgur,**kwargs) for url in urls
             ])
-
+            kwargs["finished"][id] = datetime.datetime.utcnow().isoformat()
 
 
     async def create_response(self,id):
