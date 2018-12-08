@@ -5,7 +5,6 @@ from contextlib import closing
 from urllib.parse import urlsplit,unquote
 import posixpath
 import os
-import requests
 import aiohttp
 import asyncio
 
@@ -23,10 +22,10 @@ class UrlCrawler:
             raise ServerError("Internal Server Error",status_code=500)
 
 
-    async def is_valid_url(self,url):
+    async def is_valid_url(self,url,session):
 
-        valid_request = requests.head(url)
-        if valid_request.headers["content-type"] not in self.allowed_formats or valid_request.headers["content-length"] > 20480:
+        valid_request = await session.head(url)
+        if valid_request.headers["content-type"] not in self.allowed_formats or int(valid_request.headers["content-length"]) > 20480:
             return False
 
         return True
@@ -71,7 +70,7 @@ class UrlCrawler:
     async def get_image(self,url,session,semaphore,id,imgur,**kwargs):
         with(await semaphore):
             file_name = self.create_filename(url)
-            image_header = await self.is_valid_url(url)
+            image_header = await self.is_valid_url(url,session)
 
             if not image_header:
                 kwargs["failed"][id].append(url) #todo log
