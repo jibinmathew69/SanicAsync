@@ -22,3 +22,23 @@ class UrlCrawler:
             return False
 
         return True
+
+
+    async def fetcher(self,request,**kwargs):
+        if 'urls' not in request.json:
+            raise ServerError("Insufficient parameters",status_code=400)
+
+        urls = request.json["urls"]
+
+        from uuid import uuid4
+        id = str(uuid4())
+
+        kwargs["pending"][id] = urls[:]
+
+        return await self.create_response(id)
+
+
+    async def create_response(self,id):
+        return response.json({
+            "jobId" : id
+        },status=200)
