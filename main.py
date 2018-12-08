@@ -1,6 +1,12 @@
 from sanic import Sanic
 from sanic_cors import CORS
 
+completed = {}
+pending = {}
+failed = {}
+created = {}
+finished = {}
+
 
 def make_app():
     app = Sanic(__name__)
