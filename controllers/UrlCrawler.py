@@ -1,6 +1,12 @@
 from sanic import response
 from sanic.exceptions import ServerError
 from settings.settings import url_config
+from contextlib import closing
+from urllib.parse import urlsplit,unquote
+import posixpath
+import os
+import requests
+
 
 class UrlCrawler:
     def __init__(self):
@@ -16,7 +22,6 @@ class UrlCrawler:
 
 
     async def is_valid_url(self,url):
-        import requests
 
         valid_request = requests.head(url)
         if valid_request.headers["content-type"] not in self.allowed_formats or valid_request.headers["content-length"] > 20480:
@@ -45,10 +50,39 @@ class UrlCrawler:
         },status=200)
 
 
+
+    async def get_image(self,url,session,semaphore,id,imgur,**kwargs):
+        with(await semaphore):
+            file_name = self.create_filename(url)
+            image_header = await self.is_valid_url(url)
+
+            if not image_header:
+                kwargs["failed"][id].append(url) #todo log
+
+            file_name = os.path.join(self.upload_folder,file_name)
+            image_data = await session.get(url)
+
+            with closing(image_data), open(file_name, 'wb') as file:
+                while True:
+                    chunk = await image_data.content.read(self.chunk_size)
+                    if not chunk:
+                        break
+                    file.write(chunk)
+
+                imgur_result = await imgur.image_upload(file_name)
+                if imgur_result == None:
+                    kwargs["failed"][id].append(url)  # todo log
+                    kwargs["pending"].remove(url)
+                else:
+                    kwargs["completed"]["id"].append(imgur_result["data"]["link"])
+                    kwargs["pending"].remove(url)
+
+                os.remove(file_name)
+
+        return url
+
+
     def create_filename(self,url):
-        import posixpath
-        import os
-        from urllib.parse import urlsplit,unquote
 
         urlpath = urlsplit(url).path
         basename = posixpath.basename(unquote(urlpath))
