@@ -44,3 +44,16 @@ class UrlCrawler:
             "jobId" : id
         },status=200)
 
+
+    def create_filename(self,url):
+        import posixpath
+        import os
+        from urllib.parse import urlsplit,unquote
+
+        urlpath = urlsplit(url).path
+        basename = posixpath.basename(unquote(urlpath))
+        if (os.path.basename(basename) != basename or
+                    unquote(posixpath.basename(urlpath)) != basename):
+            return None
+
+        return basename
