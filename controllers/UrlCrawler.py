@@ -10,6 +10,7 @@ class UrlCrawler:
             self.max_connect = config["max_connect"]
             self.allowed_formats = config["allowed_formats"]
             self.max_size = config["max_size"]
+            self.chunk_size = config["chunk_size"]
         except:
             raise ServerError("Internal Server Error",status_code=500)
 
@@ -42,3 +43,4 @@ class UrlCrawler:
         return response.json({
             "jobId" : id
         },status=200)
+
