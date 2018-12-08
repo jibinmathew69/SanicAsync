@@ -46,16 +46,16 @@ class UrlCrawler:
         kwargs["created"][id] = datetime.datetime.utcnow().isoformat()
         kwargs["finished"][id] = None
         kwargs["pending"][id] = urls[:]
-        asyncio.ensure_future(self.fetch_urls(urls,id,imgur))
+        asyncio.ensure_future(self.fetch_urls(urls,id,imgur,**kwargs))
         return await self.create_response(id)
 
 
-    async def fetch_urls(self,urls,id,imgur):
+    async def fetch_urls(self,urls,id,imgur,**kwargs):
         loop = asyncio.get_event_loop()
         semaphore = asyncio.BoundedSemaphore(self.max_connect)
         async with aiohttp.ClientSession(loop=loop) as session:
             await asyncio.wait([
-                self.get_image(url,session,semaphore,id,imgur) for url in urls
+                self.get_image(url,session,semaphore,id,imgur,**kwargs) for url in urls
             ])
 
 
@@ -88,10 +88,10 @@ class UrlCrawler:
                 imgur_result = await imgur.image_upload(file_name)
                 if imgur_result == None:
                     kwargs["failed"][id].append(url)  # todo log
-                    kwargs["pending"].remove(url)
+                    kwargs["pending"][id].remove(url)
                 else:
-                    kwargs["completed"]["id"].append(imgur_result["data"]["link"])
-                    kwargs["pending"].remove(url)
+                    kwargs["completed"][id].append(imgur_result["data"]["link"])
+                    kwargs["pending"][id].remove(url)
 
                 os.remove(file_name)
 
