@@ -17,8 +17,10 @@ def url_config():
     try:
         dotenv.load(join(dirname(__file__), '.env'))
         urlconfig = {
-            'upload_folder' : dotenv.get('TEMPUPLOAD'),
-            'max_connect' : dotenv.get('MAXCONNECT'),
+            'upload_folder'     : dotenv.get('TEMPUPLOAD'),
+            'max_connect'       : dotenv.get('MAXCONNECT'),
+            'allowed_formats'   : ("image/png", "image/jpeg", "image/jpg","image/gif","image/apng","image/tiff"),
+            'max_size'          : 2e+7
         }
         return urlconfig
     except:
