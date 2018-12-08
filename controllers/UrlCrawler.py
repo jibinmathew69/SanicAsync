@@ -6,6 +6,8 @@ from urllib.parse import urlsplit,unquote
 import posixpath
 import os
 import requests
+import aiohttp
+import asyncio
 
 
 class UrlCrawler:
@@ -42,6 +44,16 @@ class UrlCrawler:
         kwargs["pending"][id] = urls[:]
 
         return await self.create_response(id)
+
+
+    async def fetch_urls(self,urls,id,imgur):
+        loop = asyncio.get_event_loop()
+        semaphore = asyncio.BoundedSemaphore(self.max_connect)
+        async with aiohttp.ClientSession(loop=loop) as session:
+            await asyncio.wait([
+                self.get_image(url,session,semaphore,id,imgur) for url in urls
+            ])
+
 
 
     async def create_response(self,id):
