@@ -25,7 +25,17 @@ def make_app():
                                     finished=finished
                                     )
 
+    @app.route('/v1/images')
+    async def get_uploaded(request):
+        from controllers.Status import Status
 
+        return Status.get_status(request,
+                                 completed=completed,
+                                 pending=pending,
+                                 failed=failed,
+                                 created=created,
+                                 finished=finished
+                                 )
 
     return app
 
