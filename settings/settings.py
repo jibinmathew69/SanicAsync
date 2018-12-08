@@ -20,7 +20,8 @@ def url_config():
             'upload_folder'     : dotenv.get('TEMPUPLOAD'),
             'max_connect'       : dotenv.get('MAXCONNECT'),
             'allowed_formats'   : ("image/png", "image/jpeg", "image/jpg","image/gif","image/apng","image/tiff"),
-            'max_size'          : 2e+7
+            'max_size'          : 2e+7,
+            'chunk_size'        : 1<<15
         }
         return urlconfig
     except:
