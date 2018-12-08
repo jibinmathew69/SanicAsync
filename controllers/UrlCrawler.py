@@ -25,7 +25,7 @@ class UrlCrawler:
     async def is_valid_url(self,url,session):
 
         valid_request = await session.head(url)
-        if valid_request.headers["content-type"] not in self.allowed_formats or int(valid_request.headers["content-length"]) > 20480:
+        if valid_request.headers["content-type"] not in self.allowed_formats or int(valid_request.headers["content-length"]) > self.max_size:
             return False
 
         return True
