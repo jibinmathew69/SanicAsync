@@ -32,7 +32,7 @@ class UrlCrawler:
         return True
 
 
-    async def fetcher(self,request,**kwargs):
+    async def fetcher(self,request,imgur,**kwargs):
         if 'urls' not in request.json:
             raise ServerError("Insufficient parameters",status_code=400)
 
@@ -47,7 +47,7 @@ class UrlCrawler:
         kwargs["created"][id] = datetime.datetime.utcnow().isoformat()
         kwargs["finished"][id] = None
         kwargs["pending"][id] = urls[:]
-
+        asyncio.ensure_future(self.fetch_urls(urls,id,imgur))
         return await self.create_response(id)
 
 
