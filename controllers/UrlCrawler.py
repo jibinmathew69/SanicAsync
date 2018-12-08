@@ -39,8 +39,13 @@ class UrlCrawler:
         urls = request.json["urls"]
 
         from uuid import uuid4
-        id = str(uuid4())
+        import datetime
 
+        id = str(uuid4())
+        kwargs["completed"][id] = []
+        kwargs["failed"][id] = []
+        kwargs["created"][id] = datetime.datetime.utcnow().isoformat()
+        kwargs["finished"][id] = None
         kwargs["pending"][id] = urls[:]
 
         return await self.create_response(id)
