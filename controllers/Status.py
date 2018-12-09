@@ -10,7 +10,7 @@ class Status:
     def get_status_id(self,id,**kwargs):
 
         try:
-            if not kwargs["finished"][id]:
+            if kwargs["finished"][id]:
                 status = "complete"
             elif not kwargs["completed"][id] and not kwargs["failed"][id]:
                 status = "pending"
