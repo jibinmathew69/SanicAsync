@@ -1,5 +1,4 @@
 from sanic import Sanic
-from sanic_cors import CORS
 from sanic.config import Config
 Config.KEEP_ALIVE = False
 
@@ -12,7 +11,6 @@ finished = {}
 
 def make_app():
     app = Sanic(__name__)
-    CORS(app,automatic_options=True)
 
     @app.route('/v1/images/upload',methods=["POST"])
     async def upload(request):
