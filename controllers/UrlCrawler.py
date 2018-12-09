@@ -19,6 +19,7 @@ class UrlCrawler:
             self.max_size = config["max_size"]
             self.chunk_size = config["chunk_size"]
             logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.WARNING, filename=os.path.join(config["log_folder"],config["log_file"]))
+            self.log = logging.getLogger(__name__)
         except:
             raise ServerError("Internal Server Error",status_code=500)
 
@@ -33,7 +34,7 @@ class UrlCrawler:
         return True
 
     async def logger(self,exception):
-        logging.error('%s raised an error', exception)
+        self.log.error('%s', exception)
 
 
     async def fetcher(self,request,imgur,**kwargs):
@@ -79,7 +80,7 @@ class UrlCrawler:
             image_header = await self.is_valid_url(url,session)
 
             if not image_header:
-                kwargs["failed"][id].append(url) #todo log
+                kwargs["failed"][id].append(url)
 
             file_name = os.path.join(self.upload_folder,file_name)
             image_data = await session.get(url)
@@ -91,9 +92,9 @@ class UrlCrawler:
                         break
                     file.write(chunk)
 
-                imgur_result = await imgur.image_upload(file_name)
+                imgur_result = await imgur.image_upload(file_name,self.log)
                 if imgur_result == None:
-                    kwargs["failed"][id].append(url)  # todo log
+                    kwargs["failed"][id].append(url)
                     kwargs["pending"][id].remove(url)
                 else:
                     kwargs["completed"][id].append(imgur_result["data"]["link"])
