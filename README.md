@@ -39,6 +39,6 @@ APIs can be tested over any REST client with base url = 0.0.0.0
 * log file under log directory.  
 
 ##### Known issues
-* Sanic is an asynchrounous python framework, and is relatively new, and hence for the given tasks an issue was encountered in testing, 
+* Sanic is an asynchronous python framework, and is relatively new, and hence for the given tasks an issue was encountered in testing, 
 pytest-sanic library doesn't support testing multiple request under the same test case and the application for it's thorough testing needs such a test case.
 This is a known issue, see [this](https://github.com/huge-success/sanic/issues/988), and requires more time is exploring options around the problem.
