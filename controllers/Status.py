@@ -3,8 +3,13 @@ from sanic.exceptions import ServerError
 class Status:
 
     def get_status(self,**kwargs):
-        import itertools
-        return response.json(itertools.chain.from_iterable(kwargs["completed"].values()))
+        try:
+            import itertools
+            return response.json({
+                'uploaded': itertools.chain.from_iterable(kwargs["completed"].values())
+            })
+        except:
+            raise ServerError("Internal Server Error",500)
 
 
     def get_status_id(self,id,**kwargs):
