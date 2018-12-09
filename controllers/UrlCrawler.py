@@ -8,6 +8,7 @@ import os
 import aiohttp
 import asyncio
 import logging
+import shutil
 
 class UrlCrawler:
     def __init__(self):
@@ -52,6 +53,8 @@ class UrlCrawler:
         kwargs["created"][id] = datetime.datetime.utcnow().isoformat()
         kwargs["finished"][id] = None
         kwargs["pending"][id] = urls[:]
+
+        os.makedirs(os.path.join(self.upload_folder,id))
         asyncio.ensure_future(self.fetch_urls(urls,id,imgur,**kwargs))
         return await self.create_response(id)
 
@@ -64,6 +67,7 @@ class UrlCrawler:
             await asyncio.wait([
                 self.get_image(url,session,semaphore,id,imgur,**kwargs) for url in urls
             ])
+            shutil.rmtree(os.path.join(self.upload_folder, id), ignore_errors=True)
             kwargs["finished"][id] = datetime.datetime.utcnow().isoformat()
 
 
@@ -88,7 +92,7 @@ class UrlCrawler:
                 kwargs["failed"][id].append(url)
                 kwargs["pending"][id].remove(url)
 
-            file_name = os.path.join(self.upload_folder,file_name)
+            file_name = os.path.join(self.upload_folder,id,file_name)
             image_data = await session.get(url)
 
             with closing(image_data), open(file_name, 'wb') as file:
@@ -106,7 +110,6 @@ class UrlCrawler:
                     kwargs["completed"][id].append(imgur_result["data"]["link"])
                     kwargs["pending"][id].remove(url)
 
-                os.remove(file_name)
 
         return url
 
