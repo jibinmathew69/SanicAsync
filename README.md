@@ -7,18 +7,18 @@ This repository is an asynchronous file uploader to Imgur which operates in-memo
 
 #####  Run the Dockerfile in the root folder
 
-* Create docker image <br />
+* Create docker image   
 `docker build -t imgur .`
 
-* Create docker container from imgur image <br />
+* Create docker container from imgur image   
 `docker run -p -d 80:8001 --name imgur_app imgur`
 
-* In case of rerun <br />
+* In case of rerun   
 `docker start imgur_app`
 
 
 ##### How to run tests
-* Run the following command from the root folder <br />
+* Run the following command from the root folder   
 `pytest`
 
 ### APIs
