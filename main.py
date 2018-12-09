@@ -37,7 +37,7 @@ def make_app():
                                  finished=finished
                                  )
 
-    @app.route('/v1/images/upload/<int:jobId>')
+    @app.route('/v1/images/upload/<jobId>')
     async def get_uploaded_id(request,jobId):
         from controllers.Status import Status
 
