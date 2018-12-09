@@ -28,13 +28,13 @@ class UrlCrawler:
 
         valid_request = await session.head(url)
         if valid_request.headers["content-type"] not in self.allowed_formats or int(valid_request.headers["content-length"]) > self.max_size:
-            asyncio.ensure_future(self.logger("Invalid upload url object"))
+            asyncio.ensure_future(self.logger(url,"Invalid upload url object"))
             return False
 
         return True
 
-    async def logger(self,exception):
-        self.log.error('%s', exception)
+    async def logger(self,url,exception):
+        self.log.error('url : %s | exception : %s',url,exception)
 
 
     async def fetcher(self,request,imgur,**kwargs):
@@ -78,7 +78,7 @@ class UrlCrawler:
         with(await semaphore):
             file_name = self.create_filename(url)
             if not file_name :
-                asyncio.ensure_future(self.logger("Invalid file name"))
+                asyncio.ensure_future(self.logger(url,"Invalid file name"))
                 kwargs["failed"][id].append(url)
                 kwargs["pending"][id].remove(url)
 
@@ -98,7 +98,7 @@ class UrlCrawler:
                         break
                     file.write(chunk)
 
-                imgur_result = await imgur.image_upload(file_name,self.log)
+                imgur_result = await imgur.image_upload(file_name,url,self.log)
                 if imgur_result == None:
                     kwargs["failed"][id].append(url)
                     kwargs["pending"][id].remove(url)
