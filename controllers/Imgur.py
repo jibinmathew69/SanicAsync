@@ -34,7 +34,6 @@ class Imgur:
                 }
             ) as imgur_request:
                 imgur_response = await imgur_request.json()
-                print(imgur_response)
                 if imgur_request.status == 200:
                     return imgur_response
                 else:
