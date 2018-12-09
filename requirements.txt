@@ -1,3 +1,5 @@
 sanic==0.6.0
 Sanic-Cors==0.9.3
 python-env==1.0.0
+pytest==4.0.1
+pytest-sanic==0.1.15
