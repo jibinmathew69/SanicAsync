@@ -42,5 +42,5 @@ class Imgur:
                     return None
 
 
-    async def logger(self,url,log,exception):
+    async def logger(self,log,url,exception):
         log.error('url : %s | exception : %s',url, exception)
