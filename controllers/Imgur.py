@@ -1,6 +1,7 @@
 from sanic import response
 from sanic.exceptions import ServerError
 from settings.settings import imgur_config
+import asyncio
 
 class Imgur:
     def __init__(self):
@@ -14,7 +15,7 @@ class Imgur:
             raise ServerError("Internal Server Error",status_code=500)
 
 
-    async def image_upload(self,file_name):
+    async def image_upload(self,file_name,log):
         import aiohttp
         import os.path
 
@@ -35,5 +36,10 @@ class Imgur:
                 imgur_response = await imgur_request.json()
                 if imgur_request.status == 200:
                     return imgur_response
+                else:
+                    asyncio.ensure_future(self.logger(log,imgur_response["data"]["error"]))
+                    return None
 
-        return None
+
+    async def logger(self,log,exception):
+        log.error('%s raised an error', exception)
