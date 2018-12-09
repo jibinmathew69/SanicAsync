@@ -1,5 +1,7 @@
 from sanic import Sanic
 from sanic_cors import CORS
+from sanic.config import Config
+Config.KEEP_ALIVE = False
 
 completed = {}
 pending = {}
