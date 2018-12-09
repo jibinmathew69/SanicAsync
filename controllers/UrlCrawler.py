@@ -18,7 +18,7 @@ class UrlCrawler:
             self.allowed_formats = config["allowed_formats"]
             self.max_size = config["max_size"]
             self.chunk_size = config["chunk_size"]
-            logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.WARNING, filename=os.path.join(config["log_folder"],config["log_file"]))
+            logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.ERROR, filename=os.path.join(config["log_folder"],config["log_file"]))
             self.log = logging.getLogger(__name__)
         except:
             raise ServerError("Internal Server Error",status_code=500)
