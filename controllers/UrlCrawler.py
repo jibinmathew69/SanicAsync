@@ -77,10 +77,16 @@ class UrlCrawler:
     async def get_image(self,url,session,semaphore,id,imgur,**kwargs):
         with(await semaphore):
             file_name = self.create_filename(url)
+            if not file_name :
+                asyncio.ensure_future(self.logger("Invalid file name"))
+                kwargs["failed"][id].append(url)
+                kwargs["pending"][id].remove(url)
+
             image_header = await self.is_valid_url(url,session)
 
             if not image_header:
                 kwargs["failed"][id].append(url)
+                kwargs["pending"][id].remove(url)
 
             file_name = os.path.join(self.upload_folder,file_name)
             image_data = await session.get(url)
