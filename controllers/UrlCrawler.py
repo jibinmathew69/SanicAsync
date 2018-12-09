@@ -27,7 +27,7 @@ class UrlCrawler:
 
         valid_request = await session.head(url)
         if valid_request.headers["content-type"] not in self.allowed_formats or int(valid_request.headers["content-length"]) > self.max_size:
-            asyncio.ensure_future(self.logger("Invalid url object"))
+            asyncio.ensure_future(self.logger("Invalid upload url object"))
             return False
 
         return True
