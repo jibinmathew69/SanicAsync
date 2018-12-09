@@ -7,7 +7,7 @@ import posixpath
 import os
 import aiohttp
 import asyncio
-
+import logging
 
 class UrlCrawler:
     def __init__(self):
@@ -18,6 +18,7 @@ class UrlCrawler:
             self.allowed_formats = config["allowed_formats"]
             self.max_size = config["max_size"]
             self.chunk_size = config["chunk_size"]
+            logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.WARNING, filename=os.path.join(config["log_folder"],config["log_file"]))
         except:
             raise ServerError("Internal Server Error",status_code=500)
 
@@ -26,9 +27,13 @@ class UrlCrawler:
 
         valid_request = await session.head(url)
         if valid_request.headers["content-type"] not in self.allowed_formats or int(valid_request.headers["content-length"]) > self.max_size:
+            asyncio.ensure_future(self.logger("Invalid url object"))
             return False
 
         return True
+
+    async def logger(self,exception):
+        logging.error('%s raised an error', exception)
 
 
     async def fetcher(self,request,imgur,**kwargs):
