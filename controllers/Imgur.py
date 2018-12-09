@@ -15,7 +15,7 @@ class Imgur:
             raise ServerError("Internal Server Error",status_code=500)
 
 
-    async def image_upload(self,file_name,log):
+    async def image_upload(self,file_name,url,log):
         import aiohttp
         import os.path
 
@@ -34,12 +34,13 @@ class Imgur:
                 }
             ) as imgur_request:
                 imgur_response = await imgur_request.json()
+                print(imgur_response)
                 if imgur_request.status == 200:
                     return imgur_response
                 else:
-                    asyncio.ensure_future(self.logger(log,imgur_response["data"]["error"]))
+                    asyncio.ensure_future(self.logger(log,url,imgur_response["data"]["error"]))
                     return None
 
 
-    async def logger(self,log,exception):
-        log.error('%s raised an error', exception)
+    async def logger(self,url,log,exception):
+        log.error('url : %s | exception : %s',url, exception)
