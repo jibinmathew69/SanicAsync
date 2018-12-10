@@ -36,7 +36,8 @@ APIs can be tested over any REST client with base url = 0.0.0.0
 * Asychronous operations achieved using coroutines and semaphores. 
 * Lack of external reliable data storage, results in loss of status in case of server restart, and is limited by RAM allocations. 
 * For invalid jobId in `/v1/images/upload/<jobId>` server throws Internal Server Error for simplicity.
-* log file under log directory.  
+* Log file under log directory.  
+* URLs within a given upload job is unique.
 
 ##### Known issues
 * Sanic is an asynchronous python framework, and is relatively new, and hence for the given tasks an issue was encountered in testing, 
