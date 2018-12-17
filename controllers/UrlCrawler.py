@@ -27,7 +27,12 @@ class UrlCrawler:
 
     async def is_valid_url(self,url,session):
 
-        valid_request = await session.head(url)
+        try:
+            valid_request = await session.head(url)
+        except:
+            asyncio.ensure_future(self.logger(url,"URL inaccessible"))
+            return False
+
         if valid_request.headers["content-type"] not in self.allowed_formats or int(valid_request.headers["content-length"]) > self.max_size:
             asyncio.ensure_future(self.logger(url,"Invalid upload url object"))
             return False
@@ -92,23 +97,24 @@ class UrlCrawler:
                 kwargs["failed"][id].append(url)
                 kwargs["pending"][id].remove(url)
 
-            file_name = os.path.join(self.upload_folder,id,file_name)
-            image_data = await session.get(url)
+            else:
+                file_name = os.path.join(self.upload_folder,id,file_name)
+                image_data = await session.get(url)
 
-            with closing(image_data), open(file_name, 'wb') as file:
-                while True:
-                    chunk = await image_data.content.read(self.chunk_size)
-                    if not chunk:
-                        break
-                    file.write(chunk)
+                with closing(image_data), open(file_name, 'wb') as file:
+                    while True:
+                        chunk = await image_data.content.read(self.chunk_size)
+                        if not chunk:
+                            break
+                        file.write(chunk)
 
-                imgur_result = await imgur.image_upload(file_name,url,self.log)
-                if imgur_result == None:
-                    kwargs["failed"][id].append(url)
-                    kwargs["pending"][id].remove(url)
-                else:
-                    kwargs["completed"][id].append(imgur_result["data"]["link"])
-                    kwargs["pending"][id].remove(url)
+                    imgur_result = await imgur.image_upload(file_name,url,self.log)
+                    if imgur_result == None:
+                        kwargs["failed"][id].append(url)
+                        kwargs["pending"][id].remove(url)
+                    else:
+                        kwargs["completed"][id].append(imgur_result["data"]["link"])
+                        kwargs["pending"][id].remove(url)
 
 
         return url
